@@ -17,7 +17,7 @@ def main():
 
         frame_count += 1
         
-        if frame_count % 3 == 0: # infer every third frame
+        if frame_count % 5 == 0: # infer every fifth frame
             _, _, annotated_frame = detector.detect(frame)
             last_annotated_frame = annotated_frame
 
