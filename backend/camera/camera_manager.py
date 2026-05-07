@@ -49,23 +49,3 @@ class CameraManager:
         
     def release(self):
         self.cap.release()
-
-# temp test loop 
-
-if __name__ == "__main__":
-
-    camera = CameraManager()
-
-    while True:
-
-        frame = camera.read_frame()
-
-        if frame is None:
-            break
-
-        cv2.imshow(camera.cam_name, frame)
-
-        if cv2.waitKey(1) == 27: # ESC key
-            break 
-    camera.release()
-    cv2.destroyAllWindows()
