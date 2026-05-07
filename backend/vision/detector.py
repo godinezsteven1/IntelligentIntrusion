@@ -13,7 +13,12 @@ class VisionDetector:
 
         
     def detect(self, frame):
-        results = self.model(frame)
+        results = self.model(
+        frame,
+        imgsz=320,
+        conf=0.4,
+        verbose=False
+        )
         boxes = results[0].boxes # first results framed boxes 
         annotated_frame = results[0].plot()
 

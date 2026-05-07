@@ -1,5 +1,3 @@
-# basic camera functionality and video campture 
-
 import cv2
 
 
