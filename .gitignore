@@ -1,5 +1,5 @@
 # Authorized Face Datasets
-backend/data/faces
+backend/data/faces/
 
 # Python Cache
 __pycache__/
