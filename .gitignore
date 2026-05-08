@@ -1,0 +1,24 @@
+# Authorized Face Datasets
+backend/data/faces
+
+# Python Cache
+__pycache__/
+
+# Virtual Env
+venv/
+.env/
+.env
+
+# Model Weights
+*.pt
+
+# OS junk 
+.DS_Store
+
+# Deep Learning 
+*.pth
+*.onnx
+*.engine
+
+# Logs
+*.log
