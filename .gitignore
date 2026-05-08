@@ -1,6 +1,9 @@
 # Authorized Face Datasets
 backend/data/faces/
 
+#Generated Embeddings
+backend/data/embeddings/
+
 # Python Cache
 __pycache__/
 
