@@ -8,6 +8,7 @@ def main():
     detector = VisionDetector()
     frame_count = 0 
     last_annotated_frame = None
+    parsed_detections = []
 
     while True:
         frame = camera.read_frame()
@@ -18,8 +19,9 @@ def main():
         frame_count += 1
         
         if frame_count % 5 == 0: # infer every fifth frame
-            _, _, annotated_frame = detector.detect(frame)
+            parsed_detections, annotated_frame = detector.detect(frame)
             last_annotated_frame = annotated_frame
+            print(parsed_detections)
 
             
         if last_annotated_frame is not None:
