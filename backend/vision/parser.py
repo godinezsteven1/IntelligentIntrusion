@@ -1,4 +1,34 @@
 
+
+def calculate_iou(box_a, box_b): #iou intersection over union which decides how associations 
+    x1_a, y1_a, x2_a, y2_a = box_a
+    x1_b, y1_b, x2_b, y2_b = box_b
+    
+    # intersection rectangle
+    intersection_x1 = max(x1_a, x1_b)
+    intersection_y1 = max(y1_a, y1_b)
+    intersection_x2 = min(x2_a, x2_b)
+    intersection_y2 = min(y2_a, y2_b)
+    
+    # intersection area (clamp to 0 if boxes don't overlap)
+    intersection_width = max(0, intersection_x2 - intersection_x1)
+    intersection_height = max(0, intersection_y2 - intersection_y1)
+    intersection_area = intersection_width * intersection_height
+    
+    # individual box areas
+    area_a = (x2_a - x1_a) * (y2_a - y1_a)
+    area_b = (x2_b - x1_b) * (y2_b - y1_b)
+    
+    # union area (subtract intersection to avoid double-counting)
+    union_area = area_a + area_b - intersection_area
+    
+    # guard against division by zero
+    if union_area == 0:
+        return 0.0
+    
+    return intersection_area / union_area
+
+
 class DetectionParser:
 
     """
@@ -73,6 +103,25 @@ class DetectionParser:
                 persons.append(detection)
             else:
                 unassociated_detections.append(detection)
+
+        for person in persons:
+            for detection in unassociated_detections:
+                iou = calculate_iou(
+                    person["bounding_box"],
+                    detection["bounding_box"]
+                )
+
+                # overlap ratio between two bboxes [0,1]
+                if iou > .1: # will fine tune later 
+                    associated_object = {
+                        "class_id": detection["class_id"],
+                        "class_name": detection["class_name"],
+                        "confidence": detection["confidence"],
+                        "bounding_box": detection["bounding_box"],
+                        "association": "near",
+                        "association_confidence": iou,
+                        "iou_with_person": iou
+                    } 
 
         return {
             "frame_id": frame_id,
