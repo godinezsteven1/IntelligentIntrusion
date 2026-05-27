@@ -15,7 +15,7 @@ class VisionDetector:
 
         
     def detect(self, frame):
-        results = self.model(
+        results = self.model.track(
         frame,
         imgsz=320,
         conf=0.4,
