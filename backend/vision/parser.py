@@ -1,5 +1,6 @@
 
 
+# calculations helped by GPT 
 def calculate_iou(box_a, box_b): #iou intersection over union which decides how associations 
     x1_a, y1_a, x2_a, y2_a = box_a
     x1_b, y1_b, x2_b, y2_b = box_b
