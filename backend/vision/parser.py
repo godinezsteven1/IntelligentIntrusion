@@ -1,6 +1,7 @@
 
 
-def calculate_iou(box_a, box_b): #iou intersection over union which decides how associations 
+
+def calculate_iou(box_a, box_b): #iou (intersection over union) which decides how associations 
     x1_a, y1_a, x2_a, y2_a = box_a
     x1_b, y1_b, x2_b, y2_b = box_b
     
@@ -118,10 +119,14 @@ class DetectionParser:
                         "class_name": detection["class_name"],
                         "confidence": detection["confidence"],
                         "bounding_box": detection["bounding_box"],
-                        "association": "near",
+                        "association": "near", 
                         "association_confidence": iou,
                         "iou_with_person": iou
-                    } 
+                    }
+
+                    # appending associated object to person so now will have what a person
+                    # is holding/have on / what ever is in their bbox
+                    person["associated_objects"].append(associated_object)
 
         return {
             "frame_id": frame_id,
