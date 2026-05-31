@@ -103,7 +103,10 @@ class DetectionParser:
                 detection["associated_objects"] = []
                 persons.append(detection)
             else:
+                detection["associated"] = False
                 unassociated_detections.append(detection)
+
+        remaining_detections = []
 
         for person in persons:
             for detection in unassociated_detections:
@@ -136,13 +139,19 @@ class DetectionParser:
                     # appending associated object to person so now will have what a person
                     # is holding/have on / what ever is in their bbox
                     person["associated_objects"].append(associated_object)
+                    detection["associated"] = True
+
+        
+        for detection in unassociated_detections:
+            if not detection["associated"]:
+                remaining_detections.append(detection)
 
         return {
             "frame_id": frame_id,
             "timestamp": timestamp,
             "source": source,
             "persons": persons,
-            "unassociated_detections": unassociated_detections
+            "unassociated_detections": remaining_detections
         }
     
 
