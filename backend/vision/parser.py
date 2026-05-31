@@ -103,7 +103,10 @@ class DetectionParser:
                 detection["associated_objects"] = []
                 persons.append(detection)
             else:
+                detection["associated"] = False
                 unassociated_detections.append(detection)
+
+        remaining_detections = []
 
         for person in persons:
             for detection in unassociated_detections:
@@ -114,6 +117,15 @@ class DetectionParser:
 
                 # overlap ratio between two bboxes [0,1]
                 if iou > .1: # will fine tune later 
+
+                    # TEMP
+                    if iou > 0.1:
+                        print(
+                            f"Associating {detection['class_name']} "
+                            f"with Person {person['person_id']} "
+                            f"(IOU={iou:.3f})"
+                        )
+                        
                     associated_object = {
                         "class_id": detection["class_id"],
                         "class_name": detection["class_name"],
@@ -127,13 +139,19 @@ class DetectionParser:
                     # appending associated object to person so now will have what a person
                     # is holding/have on / what ever is in their bbox
                     person["associated_objects"].append(associated_object)
+                    detection["associated"] = True
+
+        
+        for detection in unassociated_detections:
+            if not detection["associated"]:
+                remaining_detections.append(detection)
 
         return {
             "frame_id": frame_id,
             "timestamp": timestamp,
             "source": source,
             "persons": persons,
-            "unassociated_detections": unassociated_detections
+            "unassociated_detections": remaining_detections
         }
     
 
