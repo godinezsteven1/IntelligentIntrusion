@@ -114,6 +114,15 @@ class DetectionParser:
 
                 # overlap ratio between two bboxes [0,1]
                 if iou > .1: # will fine tune later 
+
+                    # TEMP
+                    if iou > 0.1:
+                        print(
+                            f"Associating {detection['class_name']} "
+                            f"with Person {person['person_id']} "
+                            f"(IOU={iou:.3f})"
+                        )
+                        
                     associated_object = {
                         "class_id": detection["class_id"],
                         "class_name": detection["class_name"],
