@@ -42,16 +42,17 @@ class DetectionParser:
     }
     """
 
+
     def parse(
-            self, 
-            boxes, 
+            self,
+            boxes,
             class_names,
             frame_id,
             timestamp,
-            source=0): # as of now only one source 
+            source=0): # as of now only one source
 
         persons = []
-        unassociated_detections = []
+        detections = []
 
         if len(boxes.cls) == 0:
             return {
@@ -59,92 +60,32 @@ class DetectionParser:
                 "unassociated_detections": []
             }
 
-        total_detections = len(boxes.cls) #cls class labels for each box (for each labeled box)
-
         track_ids_exist = boxes.id is not None
-        
-        for i in range(total_detections): 
-        
-            class_id = int(boxes.cls[i]) # make integer class labels per box 
-            class_name = class_names[class_id] # "person" not "0"
-            confidence = float(boxes.conf[i]) # make float confidence score per box 
 
-            x1, y1, x2, y2 = boxes.xyxy[i] 
+        for i in range(len(boxes.cls)):
 
-            bounding_box = [
-                float(x1),
-                float(y1),
-                float(x2),
-                float(y2)
-            ]
+            detection = self.build_detection(
+                boxes,
+                class_names,
+                i,
+                track_ids_exist
+            )
 
-            track_id = None
-            
-            if track_ids_exist:
-                track_id = int(boxes.id[i])
+            if detection["class_name"] == "person":
 
-            detection = {
-                "class_id": class_id, 
-                "class_name": class_name, 
-                "confidence": confidence,
-                "bounding_box": bounding_box
-            }
-
-            if class_name == "person": 
-                detection["identity"] = {
-                    "status": "unknown",
-                    "name": None,
-                    "embedding_distance": None,
-                    "match_confidence": None,
-                    "face_bbox": None
-                }
-                detection["person_id"] = len(persons) + 1
-                detection["track_id"] = track_id
-                detection["associated_objects"] = []
-                persons.append(detection)
-            else:
-                detection["associated"] = False
-                unassociated_detections.append(detection)
-
-        remaining_detections = []
-
-        for person in persons:
-            for detection in unassociated_detections:
-                iou = calculate_iou(
-                    person["bounding_box"],
-                    detection["bounding_box"]
+                person = self.build_person(
+                    detection,
+                    len(persons) + 1
                 )
 
-                # overlap ratio between two bboxes [0,1]
-                if iou > .1: # will fine tune later 
+                persons.append(person)
 
-                    # TEMP
-                    if iou > 0.1:
-                        print(
-                            f"Associating {detection['class_name']} "
-                            f"with Person {person['person_id']} "
-                            f"(IOU={iou:.3f})"
-                        )
-                        
-                    associated_object = {
-                        "class_id": detection["class_id"],
-                        "class_name": detection["class_name"],
-                        "confidence": detection["confidence"],
-                        "bounding_box": detection["bounding_box"],
-                        "association": "near", 
-                        "association_confidence": iou,
-                        "iou_with_person": iou
-                    }
+            else:
+                detections.append(detection)
 
-                    # appending associated object to person so now will have what a person
-                    # is holding/have on / what ever is in their bbox
-                    person["associated_objects"].append(associated_object)
-                    detection["associated"] = True
+        self.associate_objects(persons, detections)
 
-        
-        for detection in unassociated_detections:
-            if not detection["associated"]:
-                remaining_detections.append(detection)
+        remaining_detections = self.filter_unassociated(detections)
 
         return {
             "frame_id": frame_id,
@@ -155,4 +96,101 @@ class DetectionParser:
         }
     
 
- 
+    def build_detection(self,
+                        boxes,
+                        class_names,
+                        index,
+                        track_ids_exist):
+                            
+        class_id = int(boxes.cls[index]) # make integer class labels per box 
+        class_name = class_names[class_id] # "person" not "0"
+        confidence = float(boxes.conf[index]) # make float confidence score per box
+
+        x1, y1, x2, y2 = boxes.xyxy[index]
+
+        bounding_box = [
+            float(x1),
+            float(y1),
+            float(x2),
+            float(y2)
+        ]
+
+        track_id = None
+
+        if track_ids_exist:
+            track_id = int(boxes.id[index])
+
+        return {
+            "class_id": class_id,
+            "class_name": class_name,
+            "detection_id": index + 1,
+            "confidence": confidence,
+            "bounding_box": bounding_box,
+            "track_id": track_id,
+            "associated": False
+        }
+
+
+    def build_person(self, detection, person_id):
+
+        return {
+            **detection,
+
+            "person_id": person_id,
+
+            "identity": {
+                "status": "unknown",
+                "name": None, 
+                "embedding_distance": None, 
+                "match_confidence": None,
+                "face_bbox": None
+            },
+
+            "associated_objects": []
+        }
+
+    def associate_objects(
+            self,
+            persons,
+            detections):
+        
+        for person in persons:
+        
+            for detection in detections:
+        
+                iou = calculate_iou(
+                    person["bounding_box"],
+                    detection["bounding_box"]
+                )
+
+                # overlap ratio between two bbox [0,1]
+                if iou <= 0.1:
+                    continue
+        
+                associated_object = {
+                    "detection_id": detection["detection_id"],
+                    "class_id": detection["class_id"],
+                    "class_name": detection["class_name"],
+                    "confidence": detection["confidence"],
+                    "bounding_box": detection["bounding_box"],
+                    "association": "near",
+                    "association_confidence": iou, # using iou for btoh later may diverge
+                    "iou_with_person": iou
+                }
+
+                # appending associated object to person so now will have what a person
+                # is holding/have on / what ever is in their bbox
+                person["associated_objects"].append(associated_object)
+                detection["associated"] = True
+
+                    
+    def filter_unassociated(self, detections):
+
+        remaining = [] 
+
+        for detection in detections:
+
+            if not detection["associated"]:
+                remaining.append(detection)
+
+        return remaining
