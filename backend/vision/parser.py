@@ -86,6 +86,7 @@ class DetectionParser:
             detection = {
                 "class_id": class_id, 
                 "class_name": class_name, 
+                "detection_id": i + 1,
                 "confidence": confidence,
                 "bounding_box": bounding_box
             }
@@ -129,6 +130,7 @@ class DetectionParser:
                     associated_object = {
                         "class_id": detection["class_id"],
                         "class_name": detection["class_name"],
+                        "detection_id": detection["detection_id"],
                         "confidence": detection["confidence"],
                         "bounding_box": detection["bounding_box"],
                         "association": "near", 
