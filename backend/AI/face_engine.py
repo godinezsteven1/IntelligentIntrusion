@@ -14,8 +14,15 @@ class FaceEngine:
         self.face_analyzer.prepare(ctx_id=0)
 
         
-    def process(self, scene): 
-    
+    def process(self, scene, frame): 
+
+        faces = self.face_analyzer.get(frame)
+
+        print(f"# Faces Detected: {len(faces)}")
+
+        for detected_face in faces: 
+            print(detected_face)
+            
         for person in scene["persons"]:
 
             person["face"] = {
@@ -23,9 +30,7 @@ class FaceEngine:
                 "face_bbox": None,
                 "embedding": None
             }
-
-            face = person["face"]
-            person_bbox = person["bounding_box"]
+       
 
         return scene
         

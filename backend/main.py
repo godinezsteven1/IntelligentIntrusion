@@ -1,14 +1,15 @@
 from camera.camera_manager import CameraManager
 from vision.detector import VisionDetector
+from AI.face_engine import FaceEngine
 import cv2
 
 
 def main(): 
     camera = CameraManager()
     detector = VisionDetector()
+    face_engine = FaceEngine()
     frame_count = 0 
     last_annotated_frame = None
-    parsed_detections = []
 
     while True:
         frame = camera.read_frame()
@@ -19,9 +20,11 @@ def main():
         frame_count += 1
         
         if frame_count % 5 == 0: # infer every fifth frame
-            parsed_detections, annotated_frame = detector.detect(frame, frame_count)
+
+            scene, annotated_frame = detector.detect(frame, frame_count)
+            scene = face_engine.process(scene, frame)
             last_annotated_frame = annotated_frame
-            print(parsed_detections)
+            print(scene)
 
             
         if last_annotated_frame is not None:
