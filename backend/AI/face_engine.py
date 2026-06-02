@@ -21,14 +21,14 @@ class FaceEngine:
         print(f"# Faces Detected: {len(faces)}")
 
         for detected_face in faces: 
-            print(detected_face)
+            print(detected_face.det_score)
             
         for person in scene["persons"]:
 
             person["face"] = {
-                "face_detected": False,
-                "face_bbox": None,
-                "embedding": None
+                "face_detected": True,
+                "face_bbox": detected_face.bbox.tolist(),
+                "embedding": detected_face.embedding
             }
        
 

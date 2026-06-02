@@ -24,7 +24,11 @@ def main():
             scene, annotated_frame = detector.detect(frame, frame_count)
             scene = face_engine.process(scene, frame)
             last_annotated_frame = annotated_frame
-            print(scene)
+            for person in scene["persons"]:
+                print(
+                    f"Person {person['person_id']} | "
+                    f"Face: {person['face']['face_detected']}"
+                )
 
             
         if last_annotated_frame is not None:
