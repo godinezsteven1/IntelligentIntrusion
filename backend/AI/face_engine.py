@@ -1,4 +1,5 @@
 from insightface.app import FaceAnalysis
+import time 
 
 class FaceEngine:
 
@@ -16,20 +17,26 @@ class FaceEngine:
         
     def process(self, scene, frame): 
 
+        start = time.time()
+
         faces = self.face_analyzer.get(frame)
+        print(f"FaceEngine took {time.time() - start:.3f}s")
 
         print(f"# Faces Detected: {len(faces)}")
 
         for detected_face in faces: 
             print(detected_face.det_score)
-            
-        for person in scene["persons"]:
 
-            person["face"] = {
-                "face_detected": True,
-                "face_bbox": detected_face.bbox.tolist(),
-                "embedding": detected_face.embedding
-            }
+        if len(faces) > 0:
+            detected_face = faces[0]
+                
+            for person in scene["persons"]:
+
+                person["face"] = {
+                    "face_detected": True,
+                    "face_bbox": detected_face.bbox.tolist(),
+                    "embedding": detected_face.embedding
+                }
        
 
         return scene
