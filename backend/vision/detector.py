@@ -4,7 +4,6 @@ from datetime import datetime
 import time
 
 
-
 class VisionDetector:
 
     """
@@ -15,6 +14,7 @@ class VisionDetector:
 
     def __init__(self, model_name="yolov8n.pt"):
         self.model = YOLO(model_name)
+        self.model.to("cuda")
         self.parser = DetectionParser()
 
         
@@ -26,8 +26,6 @@ class VisionDetector:
         conf=0.4,
         verbose=False
         )
-
-        print(f"YOLO took {time.time() - start:.3f}s")
 
         result = results[0] # first frame 
         

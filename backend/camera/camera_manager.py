@@ -29,17 +29,18 @@ class CameraManager:
             
                 gst_pipeline = (
                 "nvarguscamerasrc sensor-id=0 ! "
-                "video/x-raw(memory:NVMM), "
-                "width=1280, height=720, "
-                "format=NV12, framerate=30/1 ! "
+                "video/x-raw(memory:NVMM),width=1280,height=720,framerate=30/1 ! "
                 "nvvidconv ! "
-                "video/x-raw, format=BGRx ! "
+                "video/x-raw,format=BGRx ! "
                 "videoconvert ! "
-                "video/x-raw, format=BGR ! "
+                "video/x-raw,format=BGR ! "
                 "appsink"
-            )
-
-                self.cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+                )
+                
+                self.cap = cv2.VideoCapture(
+                    gst_pipeline,
+                    cv2.CAP_GSTREAMER
+                )
 
             else:
                 self.cap = cv2.VideoCapture(source)

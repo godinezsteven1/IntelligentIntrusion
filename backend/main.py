@@ -22,14 +22,8 @@ def main():
         if frame_count % 5 == 0: # infer every fifth frame
 
             scene, annotated_frame = detector.detect(frame, frame_count)
-            #scene = face_engine.process(scene, frame)
+            scene = face_engine.process(scene, frame)
             last_annotated_frame = annotated_frame
-            #for person in scene["persons"]:
-            #    print(
-            #        f"Person {person['person_id']} | "
-            #        f"Face: {person['face']['face_detected']}"
-            #    )
-
             
         if last_annotated_frame is not None:
             # display last annotated frame if exist
