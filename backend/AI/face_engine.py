@@ -19,7 +19,23 @@ class FaceEngine:
         
     def process(self, scene, frame): 
 
-        faces = self.face_analyzer.get(frame)
+        for person in scene["persons"]:
+        
+            x1, y1, x2, y2 = map(int, person["bounding_box"])
+        
+            person_crop = frame[y1:y2, x1:x2]
+        
+            if person_crop.size == 0:
+                continue
+        
+            faces = self.face_analyzer.get(person_crop)
+        
+            for detected_face in faces:
+        
+                person["face"] = {
+                    "face_detected": True,
+                    "embedding": detected_face.embedding
+                }
 
         for detected_face in faces:
 
