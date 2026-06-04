@@ -1,7 +1,6 @@
 from ultralytics import YOLO
 from vision.parser import DetectionParser
 from datetime import datetime
-import time
 
 
 class VisionDetector:
@@ -19,7 +18,6 @@ class VisionDetector:
 
         
     def detect(self, frame, frame_id):
-        start = time.time()
         results = self.model.track(
         frame,
         imgsz=320,
