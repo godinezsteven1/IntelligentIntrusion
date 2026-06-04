@@ -17,27 +17,34 @@ class FaceEngine:
         
     def process(self, scene, frame): 
 
-        start = time.time()
-
         faces = self.face_analyzer.get(frame)
-        print(f"FaceEngine took {time.time() - start:.3f}s")
 
-        print(f"# Faces Detected: {len(faces)}")
+        for detected_face in faces:
 
-        for detected_face in faces: 
-            print(detected_face.det_score)
+            face_bbox = detected_face.bbox.tolist()
 
-        if len(faces) > 0:
-            detected_face = faces[0]
-                
             for person in scene["persons"]:
 
-                person["face"] = {
-                    "face_detected": True,
-                    "face_bbox": detected_face.bbox.tolist(),
-                    "embedding": detected_face.embedding
-                }
-       
+                person_bbox = person["bounding_box"]
 
+                if self.face_inside_person(face_bbox, person_bbox):
+
+                    person["face"] = {
+                    "face_detected": True,
+                    "face_bbox": face_bbox,
+                    "embedding": detected_face.embedding
+                    }       
+      
         return scene
+
+    def face_inside_person(self, face_bbox, person_bbox):
         
+        face_x1, face_y1, face_x2, face_y2 = face_bbox
+        person_x1, person_y1, person_x2, person_y2 = person_bbox
+        
+        return (
+            face_x1 >= person_x1 and
+            face_y1 >= person_y1 and
+            face_x2 <= person_x2 and
+            face_y2 <= person_y2
+            )
