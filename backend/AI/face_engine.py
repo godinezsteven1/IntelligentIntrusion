@@ -1,5 +1,4 @@
 from insightface.app import FaceAnalysis
-import time 
 
 class FaceEngine:
 
@@ -11,7 +10,10 @@ class FaceEngine:
 
     def __init__(self):
 
-        self.face_analyzer = FaceAnalysis()
+        self.face_analyzer = FaceAnalysis(
+            name="buffalo_s",
+            providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+        )
         self.face_analyzer.prepare(ctx_id=0)
 
         
