@@ -9,7 +9,7 @@ class CameraManager:
 
     def __init__(
         self,
-        source=0, # temp camera source for testing USB before CSI update 
+        source="csi",
         width=640,
         height=480,
         cam_name="Live Cam"):
@@ -25,8 +25,26 @@ class CameraManager:
                 "backend/camera/camera_manager.py cannot receive frame (stream end?)"
             )
 
-            self.cap = cv2.VideoCapture(self.source) # video stream input for now - usb
+            if source == "csi": 
+            
+                gst_pipeline = (
+                "nvarguscamerasrc sensor-id=0 ! "
+                "video/x-raw(memory:NVMM), "
+                "width=1280, height=720, "
+                "format=NV12, framerate=30/1 ! "
+                "nvvidconv ! "
+                "video/x-raw, format=BGRx ! "
+                "videoconvert ! "
+                "video/x-raw, format=BGR ! "
+                "appsink"
+            )
 
+                self.cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+
+            else:
+                self.cap = cv2.VideoCapture(source)
+
+                
             if not self.cap.isOpened(): 
                 #cam not open
                 raise RuntimeError(self.debug_open_failing)

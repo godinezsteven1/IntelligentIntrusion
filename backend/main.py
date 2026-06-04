@@ -5,7 +5,7 @@ import cv2
 
 
 def main(): 
-    camera = CameraManager()
+    camera = CameraManager(source="csi")
     detector = VisionDetector()
     face_engine = FaceEngine()
     frame_count = 0 
