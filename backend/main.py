@@ -22,10 +22,11 @@ def main():
         if frame_count % 5 == 0: # infer every fifth frame
 
             scene, annotated_frame = detector.detect(frame, frame_count)
-            last_annotated_frame = annotated_frame
             
-        if frame_count % 60 == 0:
-            scene = face_engine.process(scene, frame)
+            if scene["persons"] and frame_count % 120 == 0: # at 60fps every 2 sec 
+                scene = face_engine.process(scene, frame)
+
+            last_annotated_frame = annotated_frame
 
             
         if last_annotated_frame is not None:
