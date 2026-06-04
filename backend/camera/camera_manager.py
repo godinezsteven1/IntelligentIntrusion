@@ -10,8 +10,8 @@ class CameraManager:
     def __init__(
         self,
         source="csi",
-        width=640,
-        height=480,
+        width=1280,
+        height=720,
         cam_name="Live Cam"):
             self.source = source
             self.width = width
@@ -49,8 +49,8 @@ class CameraManager:
                 #cam not open
                 raise RuntimeError(self.debug_open_failing)
     
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+            #self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width) # USB 
+            #self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
 
 
 
