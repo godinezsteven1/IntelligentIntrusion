@@ -19,7 +19,6 @@ class FaceEngine:
         
     def process(self, scene, frame): 
 
-        #faces = self.face_analyzer.get(frame)
         for person in scene["persons"]:
         
             x1, y1, x2, y2 = map(int, person["bounding_box"])
