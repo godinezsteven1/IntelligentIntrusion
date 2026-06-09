@@ -39,6 +39,8 @@ class FaceEngine:
             except Exception as e:
                 print("FAILED:", e)
                 continue
+
+            print(len(faces))
         
             for detected_face in faces:
         
