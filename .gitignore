@@ -4,7 +4,7 @@ backend/data/faces/
 #Generated Embeddings
 backend/data/embeddings/
 
-# Identity embeddings
+# Identity embeddings are generated locally and contains biometric info
 backened/identity/identities/*
 
 # Keep the folder for those who clone
