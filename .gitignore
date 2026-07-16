@@ -4,6 +4,12 @@ backend/data/faces/
 #Generated Embeddings
 backend/data/embeddings/
 
+# Identity embeddings
+backened/identity/identities/*
+
+# Keep the folder for those who clone
+!backend/identity/identities/.gitkeep
+
 # Python Cache
 __pycache__/
 
